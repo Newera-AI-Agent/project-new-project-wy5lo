@@ -1,5 +1,6 @@
 import numpy as np
-from moviepy.editor import *
+from moviepy import VideoClip, AudioFileClip
+from moviepy.video.tools.drawing import color_gradient
 from moviepy.video.tools.drawing import color_gradient
 import json
 import math
@@ -137,7 +138,8 @@ def create_particle_field(width, height, num_particles=200, color=(255,255,255),
         x = np.random.randint(0, width)
         y = np.random.randint(0, height)
         size = np.random.uniform(*size_range)
-        alpha = np.random.randint(*alpha_range)\n        c = (*color[:3], alpha)
+        alpha = np.random.randint(*alpha_range)
+        c = (*color[:3], alpha)
         draw.ellipse([x-size, y-size, x+size, y+size], fill=c)
     return img
 
