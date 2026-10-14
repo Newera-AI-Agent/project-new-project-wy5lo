@@ -13,6 +13,7 @@ print(f"Sample rate: {sr} Hz")
 
 # 1. Beat tracking
 tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
+tempo = float(tempo) if isinstance(tempo, np.ndarray) else tempo
 beat_times = librosa.frames_to_time(beat_frames, sr=sr)
 print(f"Estimated tempo: {tempo:.2f} BPM")
 print(f"Number of beats: {len(beat_times)}")
