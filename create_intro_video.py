@@ -551,7 +551,15 @@ def render_frame(t, elements):
     for elem in elements:
         elem_frame = elem.get_frame(t)
         if elem_frame is not None:
-            elem_img = Image.fromarray(elem_frame, 'RGBA')
+            # Ensure frame is correct size
+            from PIL import Image as PILImage
+            if elem_frame.shape[0] != HEIGHT or elem_frame.shape[1] != WIDTH:
+                # Resize if needed
+                elem_img = PILImage.fromarray(elem_frame, 'RGBA' if elem_frame.shape[2] == 4 else 'RGB')
+                elem_img = elem_img.resize((WIDTH, HEIGHT), PILImage.LANCZOS)
+                elem_frame = np.array(elem_img.convert('RGBA'))
+            
+            elem_img = PILImage.fromarray(elem_frame, 'RGBA')
             frame = Image.alpha_composite(frame, elem_img)
     
     return frame.convert('RGB')
