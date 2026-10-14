@@ -593,7 +593,7 @@ video_clip = VideoClip(make_frame, duration=duration)
 
 # Add audio
 audio_clip = AudioFileClip("ptasinski - life force (ft. RJ Pasin)_128k.mp3")
-video_clip = video_clip.set_audio(audio_clip)
+video_clip = video_clip.with_audio(audio_clip)
 
 # Write output
 print("Rendering video (this will take a while)...")
