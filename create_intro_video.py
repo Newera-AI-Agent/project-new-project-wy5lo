@@ -43,9 +43,9 @@ FONT_REGULAR = "DejaVu-Sans"
 FONT_LIGHT = "DejaVu-Sans-Light"
 
 # Video settings
-WIDTH = 1280
-HEIGHT = 720
-FPS = 24
+WIDTH = 960
+HEIGHT = 540
+FPS = 20
 
 # ============================================================
 # EASING FUNCTIONS
@@ -599,6 +599,6 @@ video_clip = video_clip.with_audio(audio_clip)
 print("Rendering video (this will take a while)...")
 output_path = "newera_ai_agent_intro.mp4"
 video_clip.write_videofile(output_path, fps=FPS, codec='libx264', audio_codec='aac',
-                          preset='ultrafast', bitrate='3000k', threads=4)
+                          preset='ultrafast', bitrate='1500k', threads=4)
 
 print(f"Video saved to {output_path}")
