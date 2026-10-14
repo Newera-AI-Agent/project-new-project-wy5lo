@@ -367,13 +367,16 @@ def create_scene_elements():
     
     # ---- SECTION 1: INTRO / LOGO REVEAL (0-15s) ----
     # Dark background with particle field
+    bg_gradient = create_radial_gradient(WIDTH, HEIGHT, COLORS['bg_black'], COLORS['bg_dark']).convert('RGBA')
+    bg_gradient_arr = np.ascontiguousarray(np.array(bg_gradient))
     elements.append(AnimatedElement(0, duration,
-        lambda p, t: np.array(create_radial_gradient(WIDTH, HEIGHT, COLORS['bg_black'], COLORS['bg_dark']))))
+        lambda p, t: bg_gradient_arr.copy()))
     
     # Particle field (static)
-    particles_static = create_particle_field(WIDTH, HEIGHT, 150, COLORS['fg_white'], (10, 60), (1, 2))
+    particles_static = create_particle_field(WIDTH, HEIGHT, 150, COLORS['fg_white'], (10, 60), (1, 2)).convert('RGBA')
+    particles_static_arr = np.ascontiguousarray(np.array(particles_static))
     elements.append(AnimatedElement(0, duration,
-        lambda p, t: np.array(particles_static)))
+        lambda p, t: particles_static_arr.copy()))
     
     # NEWERA Logo - main reveal at first beat
     elements.append(TextReveal("NEWE" + "RA", 0.0, 4.0, (center_x, center_y - 60), 120, COLORS['fg_white'],
@@ -551,13 +554,23 @@ def render_frame(t, elements):
     for elem in elements:
         elem_frame = elem.get_frame(t)
         if elem_frame is not None:
-            # Ensure frame is correct size
+            # Ensure frame is correct size and format
             from PIL import Image as PILImage
             if elem_frame.shape[0] != HEIGHT or elem_frame.shape[1] != WIDTH:
                 # Resize if needed
-                elem_img = PILImage.fromarray(elem_frame, 'RGBA' if elem_frame.shape[2] == 4 else 'RGB')
+                mode = 'RGBA' if elem_frame.shape[2] == 4 else 'RGB'
+                elem_img = PILImage.fromarray(np.ascontiguousarray(elem_frame), mode)
                 elem_img = elem_img.resize((WIDTH, HEIGHT), PILImage.LANCZOS)
-                elem_frame = np.array(elem_img.convert('RGBA'))
+                elem_frame = np.ascontiguousarray(np.array(elem_img.convert('RGBA')))
+            else:
+                # Ensure contiguous array
+                elem_frame = np.ascontiguousarray(elem_frame)
+            
+            # Ensure RGBA format
+            if elem_frame.shape[2] == 3:
+                # Add alpha channel
+                alpha = np.full((HEIGHT, WIDTH, 1), 255, dtype=np.uint8)
+                elem_frame = np.concatenate([elem_frame, alpha], axis=2)
             
             elem_img = PILImage.fromarray(elem_frame, 'RGBA')
             frame = Image.alpha_composite(frame, elem_img)
